@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { loginSchema } from '../utils/schemas';
+import { loginSchema } from '../schemas';
 import { loginUser, getMe } from '../services/auth.service';
 
 export const login = async (req: Request, res: Response) => {
