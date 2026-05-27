@@ -25,6 +25,11 @@ export const me = async (req: Request, res: Response) => {
     const user = await getMe(req.user!.userId);
     res.status(200).json(user);
   } catch (error: any) {
-    res.status(404).json({ error: error.message });
+    if (error instanceof Error && error.message === 'User not found') {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
