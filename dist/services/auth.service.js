@@ -7,6 +7,10 @@ exports.getMe = exports.loginUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma_1 = __importDefault(require("../utils/prisma"));
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+}
 const loginUser = async (email, password) => {
     const user = await prisma_1.default.user.findUnique({ where: { email } });
     if (!user)
@@ -15,7 +19,7 @@ const loginUser = async (email, password) => {
     if (!isMatch)
         throw new Error('Invalid email or password');
     const payload = { userId: user.id, role: user.role };
-    const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
+    const token = jsonwebtoken_1.default.sign(payload, jwtSecret, {
         expiresIn: '7d',
     });
     return {

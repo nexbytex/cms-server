@@ -3,6 +3,11 @@ import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma';
 import { JwtPayload } from '../utils/types';
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error('JWT_SECRET environment variable is not set');
+}
+
 export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error('Invalid email or password');
@@ -11,7 +16,7 @@ export const loginUser = async (email: string, password: string) => {
   if (!isMatch) throw new Error('Invalid email or password');
 
   const payload: JwtPayload = { userId: user.id, role: user.role };
-  const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+  const token = jwt.sign(payload, jwtSecret, {
     expiresIn: '7d',
   });
 
